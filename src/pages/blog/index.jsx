@@ -1,26 +1,24 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import { AtTabBar } from 'taro-ui';
+import { AtTimeline } from 'taro-ui'
 import { connect } from '@tarojs/redux'
+import { actions, selectors } from '../../model/blog';
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+// import { add, minus, asyncAdd } from '../../actions/counter'
 
 import './index.less'
 
+const mapStateToProps = (state) => ({
+  blogList: selectors.getBlogList(state)
+})
 
-@connect(({ counter }) => ({
-  counter
-}), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+const mapDispatchToProps = (dispatch) => ({
+  onBlogList() {
+    dispatch(actions.listBlog())
   }
-}))
+})
+
+@connect(mapStateToProps, mapDispatchToProps)
 class Blog extends Component {
 
   state = {
@@ -37,10 +35,19 @@ class Blog extends Component {
 
   componentDidHide () { }
 
+  componentDidMount() {
+    this.props.onBlogList(); 
+  }
+
   render () {
+    const { blogList } = this.props;
     return (
       <View className='index'>
-        博客
+        {/* 博客 */}
+        <AtTimeline
+          items={blogList}
+        >
+        </AtTimeline>
       </View>
     )
   }

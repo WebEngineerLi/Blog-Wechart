@@ -26,7 +26,6 @@ class App extends Component {
 
   config = {
     pages: [
-      // 'pages/index/index',
       'pages/blog/index',
       'pages/cv/index',
       'pages/messages/index',
@@ -40,18 +39,24 @@ class App extends Component {
     },
     tabBar: {
       color: "#666",
-      selectedColor: "#b4282d",
+      selectedColor: "#1296db",
       backgroundColor: "#fafafa",
       borderStyle: 'black',
       list: [{
         pagePath: "pages/cv/index",
-        text: "简介"
+        text: "简介",
+        iconPath: './images/cv.png',
+        selectedIconPath: './images/cvSelected.png'
       }, {
         pagePath: "pages/blog/index",
-        text: "博客"
+        text: "博客",
+        iconPath: './images/blog.png',
+        selectedIconPath: './images/blogSelected.png'
       }, {
         pagePath: "pages/messages/index",
-        text: "留言"
+        text: "留言",
+        iconPath: './images/message.png',
+        selectedIconPath: './images/messageSelected.png'
       }]
     }
   }
@@ -72,9 +77,9 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Index />
-        {/* <Blog />
+        <Blog />
         <Cv />
-        <Messages /> */}
+        <Messages />
       </Provider>
     )
   }
