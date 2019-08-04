@@ -14,5 +14,18 @@ function listBlog (params) {
     })
   }
 }
+function blogDetail(params, callback) {
+  return async (dispatch) => {
+    const res = await services.blogDetail('get', params)
+    const { data: { data } } = res;
+    dispatch({
+      type: `${NAMESPACE}/save`,
+      payload: {
+        blogDetail: data[0]
+      }
+    })
+    callback && callback(data[0])
+  }
+}
 
-export { listBlog }
+export { listBlog, blogDetail }

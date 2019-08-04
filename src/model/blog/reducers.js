@@ -2,7 +2,8 @@ import { handleActions } from 'redux-actions';
 import NAMESPACE from './constants';
 
 const initState = {
-  blogList: []
+  blogList: [],
+  blogDetail: {}
 }
 const blogReducers = handleActions({
   [`${NAMESPACE}/save`]: (state, { payload = {} }) => ({

@@ -9,13 +9,10 @@ export const getState = (state) => {
 
 export const getBlogList = createSelector(
   getState,
-  state => {
-    // const blogList = state.blogList.map(item => ({
-    //   title: <View>{moment(item.blogCreateTime).format('YYYY-MM-DD')}</View>,
-    //   content: [item.blogTitle],
-    //   blogId: item.BlogId,
-    //   icon: 'check-circle'
-    // }))
-    return state.blogList
-  }
+  state => state.blogList
+)
+
+export const getBlogDetail = createSelector(
+  getState,
+  state => state.blogDetail
 )
