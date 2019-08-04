@@ -31,7 +31,7 @@ class Detail extends Component {
     const { params } = this.$router;
     const callback = (blogDetail) => {
       const article = converter.makeHtml(blogDetail.blogContent || '');
-      WxParse.wxParse('article', 'markdown', article, this.$scope, 5)
+      WxParse.wxParse('article', 'html', article, this.$scope, 5)
     }
     this.props.onBlogDetail(params, callback)
   }
