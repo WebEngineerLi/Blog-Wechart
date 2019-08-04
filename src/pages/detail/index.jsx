@@ -1,6 +1,5 @@
 import Taro, { Component } from '@tarojs/taro';
-import { View, RichText, ScrollView } from '@tarojs/components';
-import { AtTag } from 'taro-ui'
+import { View, ScrollView } from '@tarojs/components';
 import moment from 'moment';
 import { connect } from '@tarojs/redux'
 import { actions, selectors } from '../../model/blog';
@@ -9,11 +8,6 @@ import WxParse from '../../components/wxParse/wxParse'
 import './index.less';
 import './markdown.less';
 
-const showdown = require('showdown');
-const showdownHighlight = require("showdown-highlight");
-const converter = new showdown.Converter({
-  // extensions: [showdownHighlight]
-});
 const mapStateToProps = (state) => ({
   blogDetail: selectors.getBlogDetail(state)
 })
@@ -38,8 +32,9 @@ class Detail extends Component {
   async componentDidMount() {
     const { params } = this.$router;
     const callback = (blogDetail) => {
-      const article = converter.makeHtml(blogDetail.blogContent || '');
-      WxParse.wxParse('article', 'html', article, this.$scope, 5)
+      // const article = converter.makeHtml(blogDetail.blogContent || '');
+      const article = blogDetail.blogContent;
+      WxParse.wxParse('article', 'md', article, this.$scope, 5)
     }
     this.props.onBlogDetail(params, callback)
   }
