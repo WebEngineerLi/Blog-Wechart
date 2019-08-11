@@ -24,9 +24,7 @@ class Detail extends Component {
   // app.js中配置项需要加上window，在子页面无需添加window
   config = {
     backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: 'LMY - 博客详情',
-    navigationBarBackgroundColor: '#138fff',
   }
 
   async componentDidMount() {

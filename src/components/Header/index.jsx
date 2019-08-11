@@ -1,6 +1,6 @@
 
 import Taro, { Component } from '@tarojs/taro';
-import HImg from '../images/logo.png'
+import HImg from '../../images/logo.png'
 import { View } from '@tarojs/components'
 import 'animate.css';
 import './index.less';

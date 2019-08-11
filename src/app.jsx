@@ -36,7 +36,7 @@ class App extends Component {
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'LMY - 博客小站',
       // navigationBarTextStyle: 'white',
-      navigationBarBackgroundColor: '#138fff',
+      navigationBarBackgroundColor: '#3B898A',
       // 1e5243
     },
     tabBar: {
