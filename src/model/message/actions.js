@@ -46,6 +46,26 @@ export function login(params, callback) {
 export function register(params) {
   return async () => {
     const res = await services.register('post', params)
-    console.log('res:', res);
+    return res.data.data;
+  }
+}
+export function checkUniq(params) {
+  return async () => {
+    const res = await services.checkUniq('get', params)
+    return res.data.data;
+  }
+}
+export function postMessage(params) {
+  return async (dispatch) => {
+    const res = await services.postMessage('post', params)
+    dispatch(getMessageList())
+    return res.data.success
+  }
+}
+export function deleteMessage(params) {
+  return async (dispatch) => {
+    const res = await services.deleteMessage('get', params)
+    dispatch(getMessageList())
+    return res.data.success
   }
 }

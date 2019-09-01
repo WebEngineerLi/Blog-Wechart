@@ -9,3 +9,9 @@ export const getMessageList = (method, params) => request(`${baseUrl}/service/me
 export const login = (method, params) => request(`${baseUrl}/service/login/wechart`, method, params)
 
 export const register = (method, params) => request(`${baseUrl}/service/user/register`, method, params)
+
+export const checkUniq = (method, params) => request(`${baseUrl}/service/user/checkUniq`, method, params)
+
+export const postMessage = (method, params) => request(`${baseUrl}/service/messages/post`, method, params)
+
+export const deleteMessage = (method, params) => request(`${baseUrl}/service/messages/delete`, method, params)

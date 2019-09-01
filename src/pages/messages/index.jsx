@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro';
 import { View } from '@tarojs/components';
-import { AtForm, AtTextarea, AtButton, AtLoadMore } from 'taro-ui'
+import { AtForm, AtTextarea, AtButton, AtLoadMore, AtToast, AtMessage } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import moment from 'moment';
 // import LoginModal from '../../components/LoginModal';
@@ -28,7 +28,16 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.login(params, callback))
   },
   register(params) {
-    dispatch(actions.register(params))
+    return dispatch(actions.register(params))
+  },
+  checkUniq(params, callback) {
+    return dispatch(actions.checkUniq(params, callback))
+  },
+  postMessage(params) {
+    return dispatch(actions.postMessage(params))
+  },
+  deleteMessage(params) {
+    return dispatch(actions.deleteMessage(params))
   }
 })
 @connect(mapStateToProps, mapDispatchToProps)
@@ -46,59 +55,109 @@ class Messages extends Component {
     this.handleDelete = this.handleDelete.bind(this)
     this.handleReplay = this.handleReplay.bind(this)
     this.loadMore = this.loadMore.bind(this)
-    this.showLogin = this.showLogin.bind(this)
+    this.handleLogin = this.handleLogin.bind(this)
     this.getUserInfo = this.getUserInfo.bind(this)
     this.mapColor = {}
-  }
-
-  componentDidMount() {
-    this.props.getMessageList();
-  }
-
-  generateColor(user) {
-    if (!this.mapColor[user]) {
-      return randomColor();
-    } else {
-      return this.mapColor[user];
-    }
   }
 
   state = {
     value: '',
     visible: false,
+    parentId: '',
+    email: '',
+    id: ''
   }
 
-  handleReplay() {
-
+  async componentDidMount() {
+    this.props.getMessageList();
   }
 
-  handleDelete() {
-
+  generateColor(user) {
+    if (!this.mapColor[user]) {
+      const color = randomColor();
+      this.mapColor[user] = color
+      return color;
+    } else {
+      return this.mapColor[user];
+    }
   }
 
-  handleChange(value) {
-    console.log('value:', value);
+  handleReplay(item) {
+    const { id, userInfo: { email } } = item;
+    this.setState({ parentId: id, replayEmail: email, value: `@${item.user.split('-')[0]}: ` })
   }
 
-  handleSubmit() {
+  async handleDelete(item) {
+    const res = await this.props.deleteMessage({ id: item.id })
+    if (res) {
+      Taro.atMessage({
+        message: '删除成功',
+        type: 'success'
+      })
+    }
+  }
 
+  handleChange(node) {
+    this.setState({ value: node.detail.value })
+  }
+
+  async handleSubmit() {
+    const user = Taro.getStorageSync('user');
+    const { state: { value, parentId, replayEmail } } = this
+    if (!value) {
+      Taro.atMessage({
+        'message': '请收入您的留言内容哦',
+        'type': 'warning',
+      })
+      return;
+    }
+    const res = await this.props.postMessage({
+      user,
+      content: value,
+      parentId,
+      replayEmail
+    });
+    if (res) {
+      this.setState({ value: '' })
+    }
   }
 
   getUserInfo() {
     Taro.getUserInfo({
       withCredentials: true,
       lang: 'zh_CN',
-      success: (res) => {
-        console.log('res:', res);
+      success: async (res) => {
         const { userInfo } = res;
-        const params = {
-          name: userInfo.nickName,
-          avatar: userInfo.avatarUrl,
-          password: '123456',
-          weburl: '',
-          email: '',
+        const name = `${userInfo.nickName}-${res.signature}`;
+        const uniq = await this.props.checkUniq({ name })
+        if (!uniq) {
+          const params = {
+            name,
+            avatar: userInfo.avatarUrl,
+            password: '123456',
+            weburl: '',
+            email: '',
+          }
+          const res = await this.props.register(params)
+          if (res) {
+            Taro.atMessage({
+              'message': '登录成功',
+              'type': 'success',
+            })
+            Taro.setStorageSync('user', name)
+            this.forceUpdate();
+            return;
+          }
         }
-        this.props.register(params)
+        Taro.atMessage({
+          'message': '登录成功',
+          'type': 'scuuess',
+        })
+        Taro.setStorage({
+          key: 'user',
+          data: name,
+        })
+        this.forceUpdate();
       },
       fail: (err) => {
         console.log('err:', err);
@@ -106,7 +165,7 @@ class Messages extends Component {
     })
   }
 
-  showLogin() {
+  handleLogin() {
     const jthis = this;
     Taro.getSetting({
       success(res) {
@@ -115,9 +174,6 @@ class Messages extends Component {
             scope: 'scope.userInfo',
             success: () => {
               jthis.getUserInfo();
-              // console.log('res1:', res1);
-              // // 用户已经同意小程序使用录音功能，后续调用 wx.startRecord 接口不会弹窗询问
-              // // wx.startRecord()
             }
           })
         } else {
@@ -125,53 +181,14 @@ class Messages extends Component {
         }
       }
     })
-    // Taro.authorize({
-    //   scope: 
-    // })
-    // Taro.getUserInfo({
-    //   withCredentials: true,
-    //   lang: 'zh_CN',
-    //   success: (res) => {
-    //     // console.log('res:', res);
-    //   },
-    //   fail: (err) => {
-    //     console.log('err:', err);
-    //   }
-    // })
-    // this.setState({ visible: true })
-    // Taro.login({
-    //   success:(res) => {
-    //     const callback = (res) => {
-    //       console.log('res:', res);
-    //       // Taro.getUserInfo({
-    //       //   withCredentials: true,
-    //       //   lang: 'zh_CN',
-    //       //   success: (res) => {
-    //       //     console.log('res:', res);
-    //       //   },
-    //       //   fail: (err) => {
-    //       //     console.log('err:', err);
-    //       //   }
-    //       // })
-    //     }
-    //     if (res.code) {
-    //       this.props.login({
-    //         appid: 'wx635a7f9ecdca174c',
-    //         secret: 'a8fbd59cdaabc61081236251d811a450',
-    //         jsCode: res.code
-    //       }, callback)
-    //     }
-    //   }
-    }
+  }
 
   loadMore() {
     const { pagination: { current, pageSize, total } } = this.props;
     let newPageSize = pageSize + 10;
-    if (newPageSize > total ) {
+    if (newPageSize > total) {
       newPageSize = total;
     }
-    console.log('newPageSize:', newPageSize);
-    
     this.props.dump({ status: 'loading', pagination: { current, pageSize: newPageSize } })
     this.props.getMessageList();
   }
@@ -189,27 +206,31 @@ class Messages extends Component {
         item.id = id;
       }
       const avatar = (
-        <View style={{ background: this.generateColor(item.user) }} className="avatar">
+        <View style={{ backgroundColor: this.generateColor(item.user) }} className="avatar">
           <View>{item.user[0]}</View>
         </View>
       );
-      const action = ( 
+      const action = (
         <View className="actions">
-            <View onClick={() => { this.handleReplay(item) }}>回复</View>
-            {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
+          <View onClick={() => { this.handleReplay(item) }}>回复</View>
+          {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
         </View>
       );
       return (
         <View className="comment">
-          {/* <View className="floor">第{floor}楼</View> */}
           <View>
             <Comment
-              author={item.user}
+              author={item.user.split('-')[0]}
               dateTime={item.createdTime}
               content={item.content}
-              renderActions={action}
+              renderActions={
+                <View className="actions">
+                  <View onClick={() => { this.handleReplay(item) }}>回复</View>
+                  {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
+                </View>
+              }
               renderAvatars={
-                <View style={{ background: this.generateColor(item.user) }} className="avatar">
+                <View style={{ backgroundColor: this.generateColor(item.user) }} className="avatar">
                   <View>{item.user[0]}</View>
                 </View>
               }
@@ -226,8 +247,7 @@ class Messages extends Component {
     if (messageList.length === 0) {
       return null;
     }
-    // const user = getCookie('user');
-    const user = '';
+    const user = Taro.getStorageSync('user')
     return messageList.map((item, index) => {
       const floor = total - index;
       if (id) {
@@ -235,24 +255,30 @@ class Messages extends Component {
       }
       const avatar = (
         <View style={{ background: this.generateColor(item.user) }} className="avatar">
-          <View>{item.user}</View>
+          <View>{item.user[0]}</View>
         </View>
       );
-      const action = ( 
+      const action = (
         <View className="actions">
-            <View onClick={() => { this.handleReplay(item) }}>回复</View>
-            {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
+          <View onClick={() => { this.handleReplay(item) }}>回复</View>
+          {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
         </View>
       );
+      
       return (
         <View className="comment">
           <View className="floor">第{floor}楼</View>
           <View>
             <Comment
-              author={item.user}
+              author={item.user.split('-')[0]}
               dateTime={item.createdTime}
               content={item.content}
-              renderActions={action}
+              renderActions={
+                <View className="actions">
+                  <View onClick={() => { this.handleReplay(item) }}>回复</View>
+                  {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
+                </View>
+              }
               renderAvatars={
                 <View style={{ background: this.generateColor(item.user) }} className="avatar">
                   <View>{item.user[0]}</View>
@@ -268,7 +294,7 @@ class Messages extends Component {
   }
 
   renderList() {
-    const arr = [1,2,3,4,5,6];
+    const arr = [1, 2, 3, 4, 5, 6];
     return arr.map(item => (
       <View>{item}</View>
     ))
@@ -277,11 +303,11 @@ class Messages extends Component {
   render() {
     const { value, visible } = this.state;
     const { messageList, status } = this.props;
-    console.log('status:', status);
-    
+    const user = Taro.getStorageSync('user') || '';
     return (
       <View className="wrap">
         <Header />
+        <AtMessage />
         <AtForm
           onSubmit={this.handleSubmit}
           onReset={this.handleReset}
@@ -296,10 +322,21 @@ class Messages extends Component {
               placeholder="说点话吧"
             />
             <View className="header">
-              <View className="login-tip">请您先登录</View>
-              <View className="login-btn" onClick={this.showLogin}>登录</View>
+              <View className="login-tip">{user ? `欢迎 ${user.split('-')[0]}` : '请您先登录'}</View>
+              <View className="login-btn" onClick={() => {
+                if (user) {
+                  Taro.clearStorageSync();
+                  Taro.atMessage({
+                    'message': '退出成功',
+                    'type': 'success',
+                  })
+                  this.forceUpdate();
+                } else {
+                  this.handleLogin()
+                }
+              }}>{user ? '退出' : '登录'}</View>
             </View>
-            <AtButton size="small" className="submit-message" type="primary">提交留言</AtButton>
+            <AtButton disabled={!user} onClick={() => this.handleSubmit()} size="small" className="submit-message" type="primary">提交留言</AtButton>
           </View>
         </AtForm>
         <View className="comment-wrap">
