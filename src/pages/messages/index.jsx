@@ -2,10 +2,11 @@ import Taro, { Component } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import { AtForm, AtTextarea, AtButton, AtLoadMore, AtToast, AtMessage } from 'taro-ui'
 import { connect } from '@tarojs/redux'
+import MessageList from '../../components/MessageList';
 import moment from 'moment';
+import _ from 'lodash';
 // import LoginModal from '../../components/LoginModal';
 import { actions, selectors } from '../../model/message';
-import { getCookie } from '../../utils/cookie';
 import Header from '../../components/Header';
 import './index.less';
 import Comment from '../../components/Comment';
@@ -68,7 +69,7 @@ class Messages extends Component {
     id: ''
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.props.getMessageList();
   }
 
@@ -83,7 +84,13 @@ class Messages extends Component {
   }
 
   handleReplay(item) {
-    const { id, userInfo: { email } } = item;
+    console.log('item:', item);
+
+    const { id, userInfo: { email } = {} } = item;
+    Taro.pageScrollTo({
+      scrollTop: 0,
+      duration: 300,
+    })
     this.setState({ parentId: id, replayEmail: email, value: `@${item.user.split('-')[0]}: ` })
   }
 
@@ -194,44 +201,34 @@ class Messages extends Component {
   }
 
   renderChildren(messageList, id = '') {
-    const { pagination: { total } } = this.props;
     if (messageList.length === 0) {
       return null;
     }
-    // const user = getCookie('user');
-    const user = '';
-    return messageList.map((item, index) => {
-      const floor = total - index;
+    const list = _.cloneDeep(messageList);
+    const user = Taro.getStorageSync('user');
+    return list.map((item, index) => {
+      const child = _.cloneDeep(item);
       if (id) {
-        item.id = id;
+        child.id = id;
       }
-      const avatar = (
-        <View style={{ backgroundColor: this.generateColor(item.user) }} className="avatar">
-          <View>{item.user[0]}</View>
-        </View>
-      );
-      const action = (
-        <View className="actions">
-          <View onClick={() => { this.handleReplay(item) }}>回复</View>
-          {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
-        </View>
-      );
       return (
-        <View className="comment">
+        <View className="comment" key={item.id}>
           <View>
             <Comment
-              author={item.user.split('-')[0]}
-              dateTime={item.createdTime}
-              content={item.content}
+              author={child.user.split('-')[0]}
+              dateTime={child.createdTime}
+              content={child.content}
               renderActions={
                 <View className="actions">
-                  <View onClick={() => { this.handleReplay(item) }}>回复</View>
-                  {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
+                  <View onClick={() => {
+                    this.handleReplay(child)
+                  }}>回复</View>
+                  {child.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(child) }}>删除</View> : <View></View>}
                 </View>
               }
               renderAvatars={
-                <View style={{ backgroundColor: this.generateColor(item.user) }} className="avatar">
-                  <View>{item.user[0]}</View>
+                <View style={{ backgroundColor: this.generateColor(child.user) }} className="avatar">
+                  <View>{child.user[0]}</View>
                 </View>
               }
             >
@@ -253,20 +250,8 @@ class Messages extends Component {
       if (id) {
         item.id = id;
       }
-      const avatar = (
-        <View style={{ background: this.generateColor(item.user) }} className="avatar">
-          <View>{item.user[0]}</View>
-        </View>
-      );
-      const action = (
-        <View className="actions">
-          <View onClick={() => { this.handleReplay(item) }}>回复</View>
-          {item.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(item) }}>删除</View> : <View></View>}
-        </View>
-      );
-      
       return (
-        <View className="comment">
+        <View className="comment" key={item.id}>
           <View className="floor">第{floor}楼</View>
           <View>
             <Comment
@@ -341,6 +326,13 @@ class Messages extends Component {
         </AtForm>
         <View className="comment-wrap">
           {this.renderMessages(messageList)}
+          {/* <MessageList
+            messages={messageList}
+            pagination={this.props.pagination}
+            handleReplay={this.handleReplay}
+            handleDelete={this.handleDelete}
+            generateColor={this.generateColor}
+          /> */}
         </View>
         {{
           'loading': <View className="text">加载中</View>,
