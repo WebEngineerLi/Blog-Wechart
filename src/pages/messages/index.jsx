@@ -220,9 +220,9 @@ class Messages extends Component {
               content={child.content}
               renderActions={
                 <View className="actions">
-                  <View onClick={() => {
+                  {/* <View onClick={() => {
                     this.handleReplay(child)
-                  }}>回复</View>
+                  }}>回复</View> */}
                   {child.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(child) }}>删除</View> : <View></View>}
                 </View>
               }
@@ -271,6 +271,10 @@ class Messages extends Component {
               }
             >
               {item.children && item.children.length > 0 && this.renderChildren(item.children, item.id)}
+              {/* {
+                item.children && item.children.length > 0 ?
+                 : <View></View>
+              } */}
             </Comment>
           </View>
         </View>
