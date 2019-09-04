@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro';
-import { View } from '@tarojs/components';
+import { View, Button } from '@tarojs/components';
 import { AtForm, AtTextarea, AtButton, AtLoadMore, AtToast, AtMessage } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import MessageList from '../../components/MessageList';
@@ -129,62 +129,55 @@ class Messages extends Component {
     }
   }
 
-  getUserInfo() {
-    Taro.getUserInfo({
-      withCredentials: true,
-      lang: 'zh_CN',
-      success: async (res) => {
-        const { userInfo } = res;
-        const name = `${userInfo.nickName}-${res.signature}`;
-        const uniq = await this.props.checkUniq({ name })
-        if (!uniq) {
-          const params = {
-            name,
-            avatar: userInfo.avatarUrl,
-            password: '123456',
-            weburl: '',
-            email: '',
-          }
-          const res = await this.props.register(params)
-          if (res) {
-            Taro.atMessage({
-              'message': '登录成功',
-              'type': 'success',
-            })
-            Taro.setStorageSync('user', name)
-            this.forceUpdate();
-            return;
-          }
-        }
+  async getUserInfo(res) {
+    const { detail: { userInfo } } = res;
+    const name = `${userInfo.nickName}-${res.signature}`;
+    const uniq = await this.props.checkUniq({ name })
+    if (!uniq) {
+      const params = {
+        name,
+        avatar: userInfo.avatarUrl,
+        password: '123456',
+        weburl: '',
+        email: '',
+      }
+      const res = await this.props.register(params)
+      if (res) {
         Taro.atMessage({
           'message': '登录成功',
-          'type': 'scuuess',
+          'type': 'success',
         })
-        Taro.setStorage({
-          key: 'user',
-          data: name,
-        })
+        Taro.setStorageSync('user', name)
         this.forceUpdate();
-      },
-      fail: (err) => {
-        console.log('err:', err);
+        return;
       }
+    }
+    Taro.atMessage({
+      'message': '登录成功',
+      'type': 'scuuess',
     })
+    Taro.setStorage({
+      key: 'user',
+      data: name,
+    })
+    this.forceUpdate();
   }
 
-  handleLogin() {
+  handleLogin(e) { 
     const jthis = this;
     Taro.getSetting({
       success(res) {
         if (!res.authSetting['scope.userInfo']) {
-          wx.authorize({
-            scope: 'scope.userInfo',
-            success: () => {
-              jthis.getUserInfo();
+          // 未授权 可以直接使用用户信息
+          jthis.getUserInfo(e);
+        } else {
+          Taro.getUserInfo({
+            success: (r) => {
+              const { userInfo } = r;
+              jthis.getUserInfo({ detail: { userInfo } })
             }
           })
-        } else {
-          jthis.getUserInfo();
+          // jthis.getUserInfo(e);
         }
       }
     })
@@ -220,9 +213,6 @@ class Messages extends Component {
               content={child.content}
               renderActions={
                 <View className="actions">
-                  {/* <View onClick={() => {
-                    this.handleReplay(child)
-                  }}>回复</View> */}
                   {child.user === user ? <View style={{ marginLeft: '15px' }} onClick={() => { this.handleDelete(child) }}>删除</View> : <View></View>}
                 </View>
               }
@@ -312,7 +302,7 @@ class Messages extends Component {
             />
             <View className="header">
               <View className="login-tip">{user ? `欢迎 ${user.split('-')[0]}` : '请您先登录'}</View>
-              <View className="login-btn" onClick={() => {
+              {/* <View className="login-btn" onClick={() => {
                 if (user) {
                   Taro.clearStorageSync();
                   Taro.atMessage({
@@ -323,7 +313,20 @@ class Messages extends Component {
                 } else {
                   this.handleLogin()
                 }
-              }}>{user ? '退出' : '登录'}</View>
+              }}>{user ? '退出' : '登录'}</View> */}
+              {
+                !user ?
+                <Button className="login-btn" id='login-btn' openType="getUserInfo" lang="zh_CN"  onGetUserInfo={this.handleLogin}>登录</Button>
+                :
+                <View onClick={() => {
+                  Taro.clearStorageSync();
+                  Taro.atMessage({
+                    'message': '退出成功',
+                    'type': 'success',
+                  })
+                  this.forceUpdate();
+                }}>退出</View>
+              }
             </View>
             <AtButton disabled={!user} onClick={() => this.handleSubmit()} size="small" className="submit-message" type="primary">提交留言</AtButton>
           </View>
