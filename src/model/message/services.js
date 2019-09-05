@@ -15,3 +15,9 @@ export const checkUniq = (method, params) => request(`${baseUrl}/service/user/ch
 export const postMessage = (method, params) => request(`${baseUrl}/service/messages/post`, method, params)
 
 export const deleteMessage = (method, params) => request(`${baseUrl}/service/messages/delete`, method, params)
+
+export const isOpenIdExist = (method, params) => request(`${baseUrl}/service/openid/isExist`, method, params)
+
+export const updateUser = (method, params) => request(`${baseUrl}/service/user/update`, method, params)
+
+// /service/user/update
