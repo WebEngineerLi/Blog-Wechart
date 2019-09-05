@@ -1,3 +1,4 @@
+// compose从右到左来组合多个函数
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import rootReducer from '../reducers'

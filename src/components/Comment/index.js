@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro';
 import './index.less';
 import moment from 'moment';
+import 'moment/locale/zh-cn'
 
 class Comment extends Component {
 

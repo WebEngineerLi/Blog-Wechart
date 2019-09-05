@@ -39,7 +39,7 @@ export function dump(params) {
 export function login(params, callback) {
   return async () => {
     const res = await services.login('get', params)
-    callback(res);
+    return res;
   }
 }
 
@@ -68,4 +68,17 @@ export function deleteMessage(params) {
     dispatch(getMessageList())
     return res.data.success
   }
+}
+export function isOpenIdExist(params) {
+  return async () => {
+    const res = await services.isOpenIdExist('get', params)
+    return res.data.data;
+  }
+}
+
+export function updateUser(params) {
+  return async () => {
+    const res = await services.updateUser('post', params)
+    return res;
+  }  
 }

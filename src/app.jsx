@@ -44,12 +44,14 @@ class App extends Component {
       selectedColor: "#1296db",
       backgroundColor: "#fafafa",
       borderStyle: 'black',
-      list: [{
-        pagePath: "pages/cv/index",
-        text: "简介",
-        iconPath: './images/cv.png',
-        selectedIconPath: './images/cvSelected.png'
-      }, {
+      list: [
+      //   {
+      //   pagePath: "pages/cv/index",
+      //   text: "简介",
+      //   iconPath: './images/cv.png',
+      //   selectedIconPath: './images/cvSelected.png'
+      // },
+      {
         pagePath: "pages/blog/index",
         text: "博客",
         iconPath: './images/blog.png',
