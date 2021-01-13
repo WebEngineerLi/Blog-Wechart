@@ -1,20 +1,20 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add @tarojs/async-await --silent --no-progress
+  /Users/xiao_pp/.nvm/versions/node/v14.15.4/bin/node /usr/local/bin/yarn add @tarojs/async-await --silent --no-progress
 
 PATH: 
-  /usr/local/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/xiao_pp/Documents/panpan/li_my/Blog-Wechart/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/xiao_pp/Documents/panpan/li_my/Blog-Wechart/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+  /Users/xiao_pp/.nvm/versions/node/v14.15.4/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/xiao_pp/Documents/panpan/Miang/Blog/Blog-Wechat/node_modules/.bin:/Users/xiao_pp/.nvm/versions/node/v14.15.4/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/xiao_pp/Documents/panpan/Miang/Blog/Blog-Wechat/node_modules/.bin:/Users/xiao_pp/.nvm/versions/node/v14.15.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/xiao_pp/apache-maven-3.6.3/bin:/Users/xiao_pp/apache-maven-3.6.3/bin:/Users/xiao_pp/apache-maven-3.6.3/bin
 
 Yarn version: 
-  1.17.3
+  1.22.4
 
 Node version: 
-  10.16.0
+  14.15.4
 
 Platform: 
   darwin x64
 
 Trace: 
-  Error: ENOENT: no such file or directory, copyfile '/usr/local/share/Library/Caches/Yarn/v4/npm-inherits-2.0.3-633c2c83e3da42a502f52466022480f4208261de/node_modules/inherits/LICENSE' -> '/Users/xiao_pp/Documents/panpan/li_my/Blog-Wechart/node_modules/serve-index/node_modules/inherits/LICENSE'
+  Error: ENOENT: no such file or directory, copyfile '/usr/local/share/Library/Caches/Yarn/v6/npm-ansi-styles-2.2.1-b432dd3358b634cf75e1e4664368240533c1ddbe-integrity/node_modules/ansi-styles/index.js' -> '/Users/xiao_pp/Documents/panpan/Miang/Blog/Blog-Wechat/node_modules/babel-code-frame/node_modules/ansi-styles/index.js'
 
 npm manifest: 
   {
@@ -68,7 +68,8 @@ npm manifest:
       "redux-logger": "^3.0.6",
       "redux-thunk": "^2.3.0",
       "reselect": "^4.0.0",
-      "taro-ui": "^2.2.1"
+      "taro-ui": "^2.2.1",
+      "weapp-cookie": "^1.3.7"
     },
     "devDependencies": {
       "@tarojs/plugin-babel": "1.3.10",
@@ -90,6 +91,7 @@ npm manifest:
       "eslint-plugin-import": "^2.12.0",
       "eslint-plugin-react": "^7.8.2",
       "eslint-plugin-taro": "1.3.10",
+      "node-sass": "^4.13.0",
       "stylelint": "9.3.0",
       "stylelint-config-taro-rn": "1.3.10",
       "stylelint-taro-rn": "1.3.10"
